@@ -3,10 +3,11 @@ import glob,os,io
 import sys
 sys.path.append('../')
 
+from commons.config import Config
 from commons.faceapi import AzureCognitiveFaceAPI
 from commons.blockblob import AzureStorageBlockBlob
-# import faceapi
-# import blockblob
+
+config = Config()
 
 # Face API
 # pip install azure-cognitiveservices-vision-face
@@ -17,14 +18,13 @@ from commons.blockblob import AzureStorageBlockBlob
 # https://github.com/Azure-Samples/cognitive-services-quickstart-code/blob/master/python/Face/FaceQuickstart.py
 
 if __name__ == "__main__":
-  account_name = "yoichikafaceapi01"
-  subkey = "fc16229040f748f68849b86fb3911ee6"
-  endpoint = "https://yoichikafaceapi01.cognitiveservices.azure.com"
 
-  storage_account_name = "facetagstore"
-  storage_account_key= "kQoygy0zzqjHe2vV4NWYP94j7VXGi1ZK2WV6ZWaJkFvZfrUifCzN9Dfm3NsO8Tf7r/2tTQl7b5kEBqBzEjqxPQ=="
-
-  api = AzureCognitiveFaceAPI(endpoint, subkey, storage_account_name, storage_account_key)
+  storage_info = AzureStorageBlockBlob.parse_storage_conn_string(config.get_value('AzureWebJobsStorage'))
+  api = AzureCognitiveFaceAPI(
+        config.get_value('FACEAPI_ENDPOINT'),
+        config.get_value('FACEAPI_SUBKEY'),
+        storage_info['AccountName'], 
+        storage_info['AccountKey'])
 
   # person group id should be lowercase and alphanumeric (dash is ok)
   person_group_id = "my-unique-person-group00"
