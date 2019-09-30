@@ -1,0 +1,6 @@
+azure-functions
+requests
+azure-cognitiveservices-vision-face
+azure-cosmos==3.0.2
+azure-storage-blob==1.4.0
+azure-storage-common==1.4.0
