@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json.schemastore.org/proxies",
+  "proxies": {
+    "url-registuser": {
+      "matchCondition": {
+        "methods": [ "POST" ],
+        "route": "/user"
+      },
+      "backendUri": "http://localhost:7071/api/registuser"
+    },
+    "url-deleteuser": {
+      "matchCondition": {
+        "methods": [ "DELETE" ],
+        "route": "/user/{user_id}"
+      },
+      "backendUri": "http://localhost:7071/api/deleteuser?user_id={user_id}"
+    },
+    "url-createperson": {
+      "matchCondition": {
+        "methods": [ "POST" ],
+        "route": "/user/{user_id}/person"
+      },
+      "backendUri": "http://localhost:7071/api/createperson?user_id={user_id}"
+    },
+    "url-deleteperson": {
+      "matchCondition": {
+        "methods": [ "DELETE" ],
+        "route": "/user/{user_id}/person/{person_id}"
+      },
+      "backendUri": "http://localhost:7071/api/deleteperson?user_id={user_id}&person_id={person_id}"
+    },
+     "url-getpersons": {
+      "matchCondition": {
+        "methods": [ "GET" ],
+        "route": "/user/{user_id}/persons"
+      },
+      "backendUri": "http://localhost:7071/api/getpersons?user_id={user_id}"
+    }, 
+    "url-createasset": {
+      "matchCondition": {
+        "methods": [ "POST" ],
+        "route": "/user/{user_id}/asset"
+      },
+      "backendUri": "http://localhost:7071/api/createasset?user_id={user_id}"
+    },
+    "url-deleteasset": {
+      "matchCondition": {
+        "methods": [ "DELETE" ],
+        "route": "/user/{user_id}/asset/{asset_id}"
+      },
+      "backendUri": "http://localhost:7071/api/deleteasset?user_id={user_id}&asset_id={asset_id}"
+    },
+     "url-getassets": {
+      "matchCondition": {
+        "methods": [ "GET" ],
+        "route": "/user/{user_id}/assets"
+      },
+      "backendUri": "http://localhost:7071/api/getassets?user_id={user_id}"
+    },     
+    "url-getphotos": {
+      "matchCondition": {
+        "methods": [ "POST" ],
+        "route": "/photos"
+      },
+      "backendUri": "http://localhost:7071/api/getphotos"
+    }
+  }
+}

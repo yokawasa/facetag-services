@@ -12,15 +12,16 @@ from commons.cosmosdb import AssetDB, UserDB
 config = Config()
 
 """
-req method: POST
+POST /api/createperson?user_id={user_id}
 body:
 {
-  "user_id": <user_id>,     // required
   "person_name": <person_name>  // required
 }
 """
 def main(req: func.HttpRequest) -> func.HttpResponse:
-  logging.info('Python HTTP trigger function processed a request.')
+  logging.info('createperson function processed a request.')
+
+  user_id = req.params.get('user_id')
 
   try:
     req_body = req.get_json()
@@ -30,7 +31,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
   except ValueError as ve:
     logging.info(ve)
 
-  user_id = req_body.get('user_id')
   person_name = req_body.get('person_name')
 
   if not user_id or not person_name:

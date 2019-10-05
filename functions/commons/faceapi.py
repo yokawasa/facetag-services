@@ -6,7 +6,6 @@ from urllib.parse import urlparse
 from azure.cognitiveservices.vision.face import FaceClient
 from msrest.authentication import CognitiveServicesCredentials
 from azure.cognitiveservices.vision.face.models import TrainingStatusType, Person, SnapshotObjectType, OperationStatusType
-#from .blockblob import AzureStorageBlockBlob
 from commons.blockblob import AzureStorageBlockBlob
 
 # Face API

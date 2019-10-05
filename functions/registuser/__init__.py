@@ -12,7 +12,8 @@ from commons.cosmosdb import AssetDB, UserDB
 config = Config()
 
 """
-req method: POST
+POST /user
+
 body:
 {
   "user_id": <user_id>,     // required

@@ -11,14 +11,16 @@ from commons.cosmosdb import AssetDB, UserDB
 config = Config()
 
 """
-req method: POST
+POST /api/createasset?user_id={user_id}
 body:
 {
-  "user_id": <user_id>
+  "asset_name": <asset_name>
 }
 """
 def main(req: func.HttpRequest) -> func.HttpResponse:
   logging.info('Python HTTP trigger function processed a request.')
+
+  user_id = req.params.get('user_id')
 
   try:
     req_body = req.get_json()
@@ -28,11 +30,11 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
   except ValueError as ve:
     logging.info(ve)
 
-  user_id = req_body.get('user_id')
+  asset_name = req_body.get('asset_name')
 
-  if not user_id:
+  if not user_id or not asset_name:
     return func.HttpResponse(
-        "Please pass user_id on the query string or in the request body",
+        "Please pass user_id on the query string or asset_name in the request body",
         status_code=400
     )
 
@@ -67,7 +69,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
   assetdb = AssetDB(config)
   try:
-    assetdb.add_asset(asset_id, user_id)
+    assetdb.add_asset(asset_id, asset_name, user_id)
   except Exception as e:
     return func.HttpResponse(
         str(e),

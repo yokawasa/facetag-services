@@ -9,21 +9,16 @@ from commons.config import Config
 from commons.cosmosdb import AssetDB, UserDB
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
-    logging.info('Python HTTP trigger function processed a request.')
+  logging.info('deleteasset function processed a request.')
 
-    name = req.params.get('name')
-    if not name:
-        try:
-            req_body = req.get_json()
-        except ValueError:
-            pass
-        else:
-            name = req_body.get('name')
+  user_id = req.params.get('user_id')
+  asset_id = req.params.get('asset_id')
+  if not user_id or not asset_id:
+    return func.HttpResponse(
+      "Please pass both user_id and asset_id on the query string",
+      status_code=400
+    )
+  logging.info(f"deleting asset: {asset_id} for user: {user_id}")
+  # FIXME
 
-    if name:
-        return func.HttpResponse(f"Hello {name}!")
-    else:
-        return func.HttpResponse(
-             "Please pass a name on the query string or in the request body",
-             status_code=400
-        )
+  return func.HttpResponse(asset_id)

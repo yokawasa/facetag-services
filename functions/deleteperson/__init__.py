@@ -2,23 +2,20 @@ import logging
 
 import azure.functions as func
 
+"""
+DELETE /api/deleteperson?user_id={user_id}&person_id={person_id}
+"""
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
-    logging.info('Python HTTP trigger function processed a request.')
+  logging.info('deleteperson function processed a request.')
 
-    name = req.params.get('name')
-    if not name:
-        try:
-            req_body = req.get_json()
-        except ValueError:
-            pass
-        else:
-            name = req_body.get('name')
-
-    if name:
-        return func.HttpResponse(f"Hello {name}!")
-    else:
-        return func.HttpResponse(
-             "Please pass a name on the query string or in the request body",
-             status_code=400
-        )
+  user_id = req.params.get('user_id')
+  person_id = req.params.get('person_id')
+  if not user_id or not person_id:
+    return func.HttpResponse(
+      "Please pass both user_id and person_id on the query string or in the request body",
+      status_code=400
+    )
+  logging.info(f"deleting person: {person_id} for user: {user_id}")
+  # FIXME
+  return func.HttpResponse(person_id)
