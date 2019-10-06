@@ -4,7 +4,7 @@ if [ $# -ne 2 ]
 then
   echo "$0 [user_id] [user_name]"
   echo "ex."
-  echo "$0 nogizaka46 \"Yoichi Kawasaki\""
+  echo "$0 nogizaka46 \"Nogizaka 46\""
   exit
 fi
 user_id=$1

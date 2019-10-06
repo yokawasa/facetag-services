@@ -1,7 +1,6 @@
 # facetag-services
 
-Face tagging services using Azure functions, CosmosDB, Azure Blob Storage for backend
-
+Face tagging services is a collection of APIs that allow you to build photo sharing services where you can find a person's photos easily. It is full serverless services built using Azure functions, CosmosDB, Azure Blob Storage for backend.
 
 **Table of Contents**
 <!-- TOC -->
@@ -9,8 +8,9 @@ Face tagging services using Azure functions, CosmosDB, Azure Blob Storage for ba
 - [facetag-services](#facetag-services)
     - [Features](#features)
     - [Architecture](#architecture)
-        - [Flow of trainining of faces of a person](#flow-of-trainining-of-faces-of-a-person)
-        - [Face recognition flow](#face-recognition-flow)
+    - [Example Operations](#example-operations)
+        - [Training faces of persons](#training-faces-of-persons)
+        - [Uploading photos and identifying faces of persons](#uploading-photos-and-identifying-faces-of-persons)
     - [REST APIs](#rest-apis)
         - [Authentication](#authentication)
         - [Regist User](#regist-user)
@@ -22,52 +22,63 @@ Face tagging services using Azure functions, CosmosDB, Azure Blob Storage for ba
         - [Delete Asset](#delete-asset)
         - [Get Assets](#get-assets)
         - [Get Photos](#get-photos)
+        - [Trigger Train](#trigger-train)
 
 <!-- /TOC -->
 
 ## Features
 - Train faces of a person
-- Photo Uploading
+- Uploading photos
 - Identify faces of a person in uploaded photos
-- Management API for Users, Assets, Persons, and Photos
+- Management APIs for Users, Assets, Persons, and Photos
 
 ## Architecture
+**Data flows of major operations**
+![](assets/facetag-services-arch.png)
+
+**Azure functions proxies: URI path and function mapping**
+![](assets/proxies-uri-functions-mapping.png)
+
+**Concept of user, person, and asset in facetag_services**
+
+![](assets/concepts.png)
 
 
+## Example Operations
+### Training faces of persons
+| Operation | Example |
+|---|---|
+| 1. Register user using [Regist User](#regist-user) API (Only if not yet registerd user) | Regist a user with user_id "nogizaka46" |
+| 2. Create a person for the user using [Create Person](#create-person) API. The API response contains `person_id` and `asset_id_for_train`. You'll use `person_id` for identifying the person, and `asset_id_for_train` for uploading photos of the person in order to train the face of the person. So please don't forget to get both info! | Create a person named "Mai Shiraishi", and get "063aa8ac-c9b3-4969-952f-26388ab67726" for `person_id` and "c4baf03e-1eb0-4dde-b0e6-b1d68e1f5df3" for `asset_id_for_train` |
+| 3. Upload photos of the person to the prepared container ( container name == `asset_id_for_train` ) in Azure blob storage | Upload photos of a person "Mai Shiraishi" to the container named "c4baf03e-1eb0-4dde-b0e6-b1d68e1f5df3" (= `asset_id_for_train`, the one you got previously)  |
+| 4. Trigger training of the person's face using [Trigger Train](#trigger-train) API. The training will be done asynchronously as a backgroud job | Trigger the training of a person "Mai Shiraishi" (`person_id`: "063aa8ac-c9b3-4969-952f-26388ab67726")'s faces |
 
-### Flow of trainining of faces of a person
+### Uploading photos and identifying faces of persons 
 
-1. A user uploads photos to user container for face training
-    - Create user blob container
-    - Regist CosmosDB
-    - Upload Images
-2. Trigger training
-    - Send Message to Queue (user_id)
-3. QueueTrigger Functions (Background Job)
-    - Get userinfo from CosmosDB using user_id
-    - Glob upload images
-    - Create usergroup if not exists
-    - Create persion if not exists
-    - Add faces to persion
-    - Train the user group
-    - Update status in CosmosDB
-
-### Face recognition flow
-1. Upload images
-    - Get userinfo from CosmosDB using user_id
-    - Create user blob container if needed
-    - Regist CosmosDB
-        - mapping: container_name - user_id
-    - Upload Images
-2. EventGrid Trigger Function
-    - Get user_id from container_name
-    - Get userinfo from CosmosDB using user_id
-    - Identify faces 
-    - Regist face tags
+| Operation | Example |
+|---|---|
+| 1. Create an asset for a certain category of photos that you want to upload using [Create Asset](#create-asset) API. The API response contains `asset_id` for the created asset. You'll use the `asset_id` for uploading photos of a certain category | Create an asset named "Album 2019" and you'll get an asset_id "52edcedb-f4c8-4ef5-8e16-9b56ab28346b" for the asset. |
+| 2. Upload photos of the certain cateogry to the prepared container ( container name == asset_id) in Azure blob storage. As soon as the photos are uploaded, event-driven functions are triggerred to run in order to detect, identify, and tag faces of the persons that you created/trained. Identified face info is stored persistently in backend databases.  | |
 
 ## REST APIs
 ### Authentication
-FIXME
+Add API Key for functions in HTTP header in REST API requests
+
+```json
+x-functions-key: {API_KEY}
+```
+
+> Example request for getperson API: 
+```bash
+API_KEY="abcdefgxxxxxxxxxyyyyyyyyzzzzzzzz******=="
+curl -s \
+ -H "Content-Type: application/json"\
+ -H "x-functions-key: ${API_KEY}"\
+ -XPOST https://myfacetagsvc.azurewebsites.net/person -d'
+{
+  "person_name": "Mai Shiaishi"
+}'
+```
 
 ### Regist User 
 Regist a user 
@@ -135,8 +146,12 @@ Example Body
 ```
 Status: 200 OK
 ```
-```
-<created_person_id>
+```json
+{
+   "person_id": "063aa8ac-c9b3-4969-952f-26388ab67726",
+   "person_name": "Mai Shiraishi",
+   "asset_id_for_train": "c4baf03e-1eb0-4dde-b0e6-b1d68e1f5df3"
+}
 ```
 
 ### Delete Person
@@ -311,4 +326,23 @@ Status: 200 OK
   }
   ...
 ]
+```
+
+### Trigger Train
+
+Trigger training of a person's faces
+
+> PUT /user/{user_id}/person/{person_id}/trigger
+
+**Request**
+
+|Name|Type| Requred |Description|
+|---|---|---|---|
+| `user_id`| string | Yes | User ID |
+| `person_id`| string | Yes | Person ID |
+
+**Response**
+
+```
+Status: 200 OK
 ```

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 import logging
 import azure.functions as func
 from __app__.commons.blockblob import AzureStorageBlockBlob
@@ -93,19 +94,17 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
   try:
     persons = user['persons'] if user['persons'] else []
     logging.info("persons=%s", persons)
-    persons.append(
-      {
+    created_person ={
         "person_id": created_person_id,
         "person_name": person_name,
         "asset_id_for_train": asset_id
-      })
+      }
+    persons.append(created_person)
     user['persons'] = persons
     userdb.upsert_document(document=user)
+    return func.HttpResponse(json.dumps(created_person))
   except Exception as e:
     return func.HttpResponse(
         str(e),
         status_code=400
     )
-
-  # return func.HttpResponse("OK")
-  return func.HttpResponse(created_person_id)
