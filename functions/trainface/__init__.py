@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
-import sys
-sys.path.append('../')
-
 import json
 import logging
 import azure.functions as func
-from commons.blockblob import AzureStorageBlockBlob
-from commons.faceapi import AzureCognitiveFaceAPI
-from commons.config import Config
-from commons.cosmosdb import AssetDB, UserDB
+from __app__.commons.blockblob import AzureStorageBlockBlob
+from __app__.commons.faceapi import AzureCognitiveFaceAPI
+from __app__.commons.config import Config
+from __app__.commons.cosmosdb import AssetDB, UserDB
 
 """
 - Get userinfo from CosmosDB using user_id

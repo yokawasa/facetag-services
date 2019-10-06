@@ -1,5 +1,5 @@
+# -*- coding: utf-8 -*-
 import logging
-
 import azure.functions as func
 
 """

@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
 import json
-import sys
-sys.path.append('../')
-
 import logging
 import azure.functions as func
-from commons.config import Config
-from commons.cosmosdb import PhotoDB
+from __app__.commons.config import Config
+from __app__.commons.cosmosdb import PhotoDB
 
 config=Config()
 

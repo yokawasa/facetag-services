@@ -1,0 +1,24 @@
+#!/bin/bash
+
+if [ $# -ne 2 ]
+then
+  echo "$0 [user_id] [asset_name]"
+  echo "ex."
+  echo "$0 nogizaka46 \"Album 2019\"" 
+  exit
+fi
+user_id=$1
+asset_name="$2"
+
+# URL="${API_URL}/api/createasset?user_id=${user_id}"
+URL="${API_URL}/user/${user_id}/asset"
+CONTENT_TYPE='application/json'
+
+curl \
+ --insecure \
+ -s -H "Content-Type: $CONTENT_TYPE"\
+ -H "x-functions-key: ${API_KEY}"\
+ -XPOST $URL -d"
+{
+  \"asset_name\": \"${asset_name}\"
+}"

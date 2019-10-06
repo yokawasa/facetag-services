@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-import logging
-
 import io
 from urllib.parse import urlparse
+import logging
 from azure.cognitiveservices.vision.face import FaceClient
 from msrest.authentication import CognitiveServicesCredentials
-from azure.cognitiveservices.vision.face.models import TrainingStatusType, Person, SnapshotObjectType, OperationStatusType
-from commons.blockblob import AzureStorageBlockBlob
+from azure.cognitiveservices.vision.face.models import TrainingStatusType
+from __app__.commons.blockblob import AzureStorageBlockBlob
 
 # Face API
 # pip install azure-cognitiveservices-vision-face
@@ -34,7 +33,7 @@ class AzureCognitiveFaceAPI(object):
     self._face_client.person_group.train(group_id)
     while (True):
       training_status = self._face_client.person_group.get_training_status(group_id)
-      print("Training status: {}.".format(training_status.status))
+      logging.info("Training status: {}.".format(training_status.status))
       if (training_status.status is TrainingStatusType.succeeded):
         break
       elif (training_status.status is TrainingStatusType.failed):

@@ -1,0 +1,25 @@
+#!/bin/sh
+
+if [ $# -ne 2 ]
+then
+  echo "$0 [user_id] [user_name]"
+  echo "ex."
+  echo "$0 nogizaka46 \"Yoichi Kawasaki\""
+  exit
+fi
+user_id=$1
+user_name=$2
+
+# URL="${API_URL}/api/registuser"
+URL="${API_URL}/user"
+CONTENT_TYPE='application/json'
+
+curl \
+ --insecure \
+ -s -H "Content-Type: $CONTENT_TYPE"\
+ -H "x-functions-key: ${API_KEY}"\
+ -XPOST $URL -d"
+{
+  \"user_id\": \"${user_id}\", 
+  \"user_name\": \"${user_name}\" 
+}"

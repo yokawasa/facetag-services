@@ -1,0 +1,72 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import sys
+import os
+import ntpath
+import json 
+import requests
+
+_AZFUNC_API_KEY=os.environ['API_KEY']
+_AZFUNC_API_URL="{}/blobsastoken".format(os.environ['API_URL'])
+
+def get_content_type(file_path):
+    ext = file_path.split(".")[-1].lower()
+    # ref: https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types
+    if ext == 'jpg' or ext == 'jpeg':
+        return "image/jpeg"
+    elif ext == 'gif':
+        return 'image/gif'
+    elif ext == 'png':
+        return 'image/png'
+    else:
+        return None
+
+if __name__ == '__main__':
+
+    argvs = sys.argv
+    argc = len(argvs)
+    if (argc != 3):
+        print('Usage: # %s <asset-id> <file-path>' % argvs[0] )
+        quit()
+    
+    asset_id = argvs[1]
+    file_path = argvs[2]
+    file_name = ntpath.basename(file_path)
+
+    content_type = get_content_type(file_path)
+    if not content_type:
+        print('Invalid file type! - Only gif/png/jepg/jpg files are allowed to upload')
+        quit() 
+
+    ### Getting SAS token for uploading files to Azure Blob Storage
+    payload = {
+        "permission": "awl",
+        "container": asset_id,
+        "blobname": file_name
+    }
+    r = requests.post(_AZFUNC_API_URL,
+            headers = {
+                "Content-Type" : "application/json; charset=UTF-8",
+                "x-functions-key": _AZFUNC_API_KEY
+            },
+            data=json.dumps(payload)
+        )
+    if r.status_code != 200:
+        print(f"Getting SAS token request result: status code={r.status_code}")
+        sys.exit(1) 
+    content_dict = json.loads(r.content.decode())
+    url = content_dict['url'] 
+
+    ### Uploading files to Azure Blob Storage
+    with open(file_path , 'rb') as filehandle:
+        r = requests.put(url,
+                data=filehandle,
+                headers={
+                    'Content-Type': content_type,
+                    'x-ms-blob-type': 'BlockBlob'
+                },
+                params={
+                    'file': file_path
+                }
+            )
+        print(f"Uploading request result: status code={r.status_code}")

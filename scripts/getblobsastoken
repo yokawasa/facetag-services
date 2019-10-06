@@ -1,0 +1,29 @@
+#!/bin/bash
+
+if [ $# -ne 2 ]
+then
+  echo "$0 [asset_id] [blob_name]"
+  echo "ex."
+  echo "$0 3c5fda52-f545-483c-b4b2-ed9f9734eb7f sample.jpg"
+  exit
+fi
+asset_id=$1
+blob_name="$2"
+
+# api_url="${API_URL}/api/getblobsastoken"
+api_url="${API_URL}/blobsastoken"
+# api_key="AZURE_FUNCTION_KEY: ex. aRVQ7Lj0vzDhY0JBYF8gpxYyEBxLwhO51JSC7X5dZFbTvROs7xNg=="
+api_key="aRVQ7Lj0vzDhY0JBYF8gpxYyEBxLwhO51JSC7X5dZFbTvROs7xNg=="
+
+echo "Sending HTTP POST Request............."
+curl \
+ --insecure \
+ -s -H "Content-Type: application/json" \
+ -H "x-functions-key: ${API_KEY}" \
+ -XPOST ${api_url} -d"{
+    \"permission\": \"rl\",
+    \"container\": \"${asset_id}\",
+    \"blobname\": \"${blob_name}\",
+    \"ttl\": 1
+}"
+echo ""

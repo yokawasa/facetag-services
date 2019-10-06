@@ -1,0 +1,21 @@
+#!/bin/bash
+
+if [ $# -ne 2 ]
+then
+  echo "$0 [user_id] [person_id]"
+  echo "ex."
+  echo "$0 nogizaka46 a654f4c2-dc7d-43dc-a95a-8819da69587a"
+  exit
+fi
+user_id=$1
+person_id="$2"
+
+# URL="${API_URL}/api/triggertrain?user_id=${user_id}&person_id=${person_id}"
+URL="${API_URL}/user/${user_id}/person/${person_id}/trigger"
+CONTENT_TYPE='application/json'
+
+curl \
+ --insecure \
+ -s -H "Content-Type: $CONTENT_TYPE"\
+ -H "x-functions-key: ${API_KEY}"\
+ -XPUT $URL -d"{}"

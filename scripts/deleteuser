@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if [ $# -ne 1 ]
+then
+  echo "$0 [user_id]"
+  echo "ex."
+  echo "$0 nogizaka46"
+  exit
+fi
+user_id=$1
+
+# URL="${API_URL}/api/addperson"
+URL="${API_URL}/user/${user_id}"
+CONTENT_TYPE='application/json'
+
+curl \
+ --insecure \
+ -s -H "Content-Type: $CONTENT_TYPE"\
+ -H "x-functions-key: ${API_KEY}"\
+ -XDELETE $URL

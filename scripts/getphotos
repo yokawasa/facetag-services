@@ -1,0 +1,31 @@
+#!/bin/bash
+
+if [ $# -ne 5 ]
+then
+  echo "$0 [user_id] [person_id] [order:DESC|ASC] [offset:0-] [limit:1-]"
+  echo "ex."
+  echo "$0 nogizaka46 a654f4c2-dc7d-43dc-a95a-8819da69587a DESC 0 100"
+  exit
+fi
+user_id=$1
+person_id="$2"
+order=$3
+offset=$4
+limit=$5
+
+#URL="${API_URL}/api/getphotos"
+URL="${API_URL}/photos"
+CONTENT_TYPE='application/json'
+
+curl \
+ --insecure \
+ -s -H "Content-Type: $CONTENT_TYPE"\
+ -H "x-functions-key: ${API_KEY}"\
+ -XPOST $URL -d"
+{
+  \"user_id\": \"${user_id}\", 
+  \"person_id\": \"${person_id}\", 
+  \"order\": \"${order}\", 
+  \"offset\": \"${offset}\", 
+  \"limit\": \"${limit}\"
+}" | jq

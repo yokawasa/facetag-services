@@ -1,0 +1,21 @@
+#!/bin/bash
+
+if [ $# -ne 2 ]
+then
+  echo "$0 [user_id] [asset_id]"
+  echo "ex."
+  echo "$0 nogizaka46 2d447b84-e2c4-4eed-93b6-e6600a2b5608"
+  exit
+fi
+user_id=$1
+asset_id="$2"
+
+# URL="${API_URL}/api/deleteasset?user_id={user_id}&asset_id=${asset_id}"
+URL="${API_URL}/user/${user_id}/asset/${asset_id}"
+CONTENT_TYPE='application/json'
+
+curl \
+ --insecure \
+ -s -H "Content-Type: $CONTENT_TYPE"\
+ -H "x-functions-key: ${API_KEY}"\
+ -XDELETE $URL

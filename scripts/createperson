@@ -1,0 +1,24 @@
+#!/bin/bash
+
+if [ $# -ne 2 ]
+then
+  echo "$0 [user_id] [person_name]"
+  echo "ex."
+  echo "$0 nogizaka46 \"Mai Shiraishi\""
+  exit
+fi
+user_id=$1
+person_name="$2"
+
+# URL="${API_URL}/api/createperson??user_id=${user_id}"
+URL="${API_URL}/user/${user_id}/person"
+CONTENT_TYPE='application/json'
+
+curl \
+ --insecure \
+ -s -H "Content-Type: $CONTENT_TYPE"\
+ -H "x-functions-key: ${API_KEY}"\
+ -XPOST $URL -d"
+{
+  \"person_name\": \"${person_name}\" 
+}"

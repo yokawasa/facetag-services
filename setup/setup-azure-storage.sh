@@ -12,20 +12,9 @@ az storage account create --name $STORAGE_ACCOUNT_NAME \
 # See also 
 # https://docs.microsoft.com/en-us/azure/storage/blobs/storage-blob-event-quickstart
 
-# Get Storage Key
-ACCESS_KEY=$(az storage account keys list --account-name $STORAGE_ACCOUNT_NAME --resource-group $RESOURCE_GROUP --output tsv |head -1 | awk '{print $3}')
+STORAGE_CONNECTION_STRING=$(az storage account show-connection-string \
+--resource-group $RESOURCE_GROUP --name $STORAGE_ACCOUNT_NAME \
+--query connectionString --output tsv)
 
-echo "Creating a container: Images"
-az storage container create  \
-    --name "images" \
-    --account-name $STORAGE_ACCOUNT_NAME \
-    --account-key $ACCESS_KEY \
-    --public-access off
-
-echo "Creating a container: thumbnails"
-# Make this public accessible
-az storage container create  \
-    --name "thumbnails" \
-    --account-name $STORAGE_ACCOUNT_NAME \
-    --account-key $ACCESS_KEY \
-    --public-access container
+echo "Creating Queue Storage: $QUEUE_NAME"
+az storage queue create --name $QUEUE_NAME --connection-string $STORAGE_CONNECTION_STRING

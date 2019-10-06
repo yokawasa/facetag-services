@@ -1,0 +1,18 @@
+#!/bin/bash
+
+if [ $# -ne 1 ]
+then
+    echo "$0 [user_id]"
+    exit
+fi
+user_id=$1
+
+# URL="${API_URL}/api/getassets?user_id={user_id}"
+URL="${API_URL}/user/${user_id}/assets"
+CONTENT_TYPE='application/json'
+
+curl \
+ --insecure \
+ -s -H "Content-Type: $CONTENT_TYPE"\
+ -H "x-functions-key: ${API_KEY}"\
+ -XGET $URL | jq

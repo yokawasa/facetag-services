@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
-import sys
 import json
 import logging
 import azure.functions as func
-
-sys.path.append('../')
-from commons.blockblob import AzureStorageBlockBlob
-from commons.faceapi import AzureCognitiveFaceAPI
-from commons.config import Config
-from commons.cosmosdb import AssetDB, UserDB, PhotoDB
+from __app__.commons.blockblob import AzureStorageBlockBlob
+from __app__.commons.faceapi import AzureCognitiveFaceAPI
+from __app__.commons.config import Config
+from __app__.commons.cosmosdb import AssetDB, UserDB, PhotoDB
 
 config = Config()
 

@@ -148,6 +148,7 @@ class AssetDB(AzureCosmosDB):
 """
 User data object
 - id  (primary) = user_id
+- user_name
 - person_group_id
 - asset_id_for_train
 - persons
@@ -173,9 +174,10 @@ class UserDB(AzureCosmosDB):
       logging.error("userDB get_user_id error ( user_id {} ): {} ".format(user_id, e))
     return None
 
-  def add_user(self, user_id, person_group_id, persons=[]):
+  def add_user(self, user_id, user_name, person_group_id, persons=[]):
     doc = {
       "id" : user_id,
+      "user_name" : user_name,
       "person_group_id": person_group_id,
       "persons": persons
     }
