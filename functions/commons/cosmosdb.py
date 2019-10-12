@@ -17,12 +17,12 @@ class AzureCosmosDB(object):
         url_connection=endpoint,
         auth={ 'masterKey': primary_key}
       )
-    #self._options = {
-    #    'offerThroughput': 400
-    #}
-    #self._container_definition = {
-    #    'id': self._config['CONTAINER']
-    #}
+
+    self._options = {
+        'enableCrossPartitionQuery':True,
+        'maxItemCount':1
+    }
+
     self._collection_link = "/dbs/{}/colls/{}".format(
       database_name, collection_name)
 
@@ -37,17 +37,17 @@ class AzureCosmosDB(object):
   """
 
   def add_document(self, document, disable_automatic_id_gen = False):
-    options = {}
+    options = self._options
     if disable_automatic_id_gen:
       options['disableAutomaticIdGeneration']=True
     try:
       return self._client.CreateItem(self._collection_link,document, options)
     except errors.HTTPFailure as e:
       if e.status_code == 404:
-          print('A collection with id \'{0}\' does not exist'.format(self._collection_link))
+          logging.error('A collection with id \'{0}\' does not exist'.format(self._collection_link))
       elif e.status_code == 409:
           #logger.error('A Item with id \'{0}\' already exists'.format(document['id']))            
-          print('A Item with id \'{0}\' already exists'.format(document['id']))            
+          logging.error('A Item with id \'{0}\' already exists'.format(document['id']))            
       else: 
           raise errors.HTTPFailure(e.status_code)
     except Exception as e:
@@ -55,14 +55,14 @@ class AzureCosmosDB(object):
     return None
 
   def upsert_document(self, document, disable_automatic_id_gen = False):
-    options = {}
+    options = self._options
     if disable_automatic_id_gen:
       options['disableAutomaticIdGeneration']=True
     try:
       return self._client.UpsertItem(self._collection_link, document,options)
     except errors.HTTPFailure as e:
       if e.status_code == 404:
-        print('A collection with id \'{0}\' does not exist'.format(self._collection_link))
+        logging.error('A collection with id \'{0}\' does not exist'.format(self._collection_link))
       else:
         raise errors.HTTPFailure(e.status_code)
     except Exception as e:
@@ -70,21 +70,22 @@ class AzureCosmosDB(object):
     return None
 
   def delete_document(self, id):
+    options = self._options
     query = {'query': 'SELECT * FROM c WHERE c.id = "{0}"'.format(id)}
     try:
-      self.client.DeleteItem(item['_self'], options)
+        results = self.client.QueryItems(self._collection_link, query, options)
+        for item in list(results):
+            self.client.DeleteItem(item['_self'], options)
     except errors.HTTPFailure as e:
       if e.status_code == 404:
-        print('A collection with id \'{0}\' does not exist'.format(self._collection_link))
+        logging.error('A collection with id \'{0}\' does not exist'.format(self._collection_link))
       else:
         raise errors.HTTPFailure(e.status_code)
     except Exception as e:
       raise e
 
   def get_document(self, query):
-    options = {}
-    options['enableCrossPartitionQuery'] = True
-    options['maxItemCount'] = 1
+    options = self._options
     partition_key=None
 
     docs_iterable = self._client.QueryItems(self._collection_link, query, options, partition_key)
@@ -100,6 +101,7 @@ class AzureCosmosDB(object):
 
     docs_iterable = self._client.QueryItems(self._collection_link, query, options, partition_key)
     return list(docs_iterable)
+
 
 """
 Asset data object
@@ -144,6 +146,14 @@ class AssetDB(AzureCosmosDB):
       "user_id": user_id
     }
     return self.upsert_document(doc)
+
+  def delete_asset(self, asset_id):
+    try :
+        self.delete_document(asset_id)
+    except Exception as e:
+      logging.error("AssetDB delete asset error ( asset_id {} ): {} ".format(asset_id, str(e)))
+    return None
+
 
 """
 User data object
@@ -228,5 +238,25 @@ class PhotoDB(AzureCosmosDB):
     try:
       return self.get_documents(query)
     except Exception as e:
-      logging.error("UserDB get documents error ( user_id {} person_id {} query {} ): {} ".format(user_id, person_id, query, str(e)))
+      logging.error("PhotoDB get photos of person error ( user_id {} person_id {} query {} ): {} ".format(user_id, person_id, query, str(e)))
+    return None
+
+  def get_photos_in_asset(self, user_id, asset_id, order_desc = True, offset=0, limit=100 ):
+    order_s = 'DESC' if order_desc else 'ASC'
+    query = {"query": "SELECT c.id as photo_id, c.asset_id, c.blob_name, c.user_id, c.persons, c._ts as last_updated FROM c WHERE c.user_id=\"{0}\" and c.asset_id=\"{1}\" ORDER BY c._ts {2} OFFSET {3} LIMIT {4}".format( user_id, asset_id, order_s, offset, limit) }
+    # print("query={}".format(query))
+    try:
+      return self.get_documents(query)
+    except Exception as e:
+      logging.error("PhohtoDB get photos in asset error ( user_id {} asset_id {} query {} ): {} ".format(user_id, asset_id, query, str(e)))
+    return None
+
+  def delete_photos_in_asset(self, user_id, asset_id):
+    try :
+      docs = self.get_photos_in_asset(user_id, asset_id)
+      for doc in list(docs):
+        logging.info("PhotoDB deleting photo (user_id {} asset_id {} photo_id {} )".format(user_id, asset_id, doc['id']) )
+        self.delete_document(doc['id'])
+    except Exception as e:
+      logging.error("PhotoDB delete photos in asset error ( user_id {} asset_id {} ): {} ".format(user_id, asset_id, str(e)))
     return None

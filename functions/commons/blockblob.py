@@ -33,6 +33,9 @@ class AzureStorageBlockBlob(object):
 
   def create_container(self, container_name):
     return self._client.create_container(container_name)
+  
+  def delete_container(self, container_name):
+    return self._client.delete_container(container_name)
 
   def get_blob(self, container_name, blob_name):
     return self._client.get_blob_to_bytes(container_name, blob_name)

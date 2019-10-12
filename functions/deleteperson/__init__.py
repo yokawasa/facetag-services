@@ -17,5 +17,11 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
       status_code=400
     )
   logging.info(f"deleting person: {person_id} for user: {user_id}")
+
+  # 1. delete from person from userDB
   # FIXME
+
+  # 2. delete from person from usergroup in face api
+  # FIXME
+
   return func.HttpResponse(person_id)

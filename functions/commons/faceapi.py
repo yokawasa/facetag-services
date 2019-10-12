@@ -45,6 +45,10 @@ class AzureCognitiveFaceAPI(object):
     # SDK ref:  https://t.ly/K19Bb
     return self._face_client.person_group_person.create(group_id, person_name)
 
+  def delete_person(self, group_id, person_id):
+    # SDK ref:  https://t.ly/7rb5X
+    return self._face_client.person_group_person.delete(group_id, person_id)
+
   def add_face_stream(self, group_id, person_id, stream):
     # {'additional_properties': {}, 'persisted_face_id': '4a8313db-6eb8-4a89-b058-23073c04571c', 'user_data': None}
     # SDK ref: https://t.ly/9gnel
