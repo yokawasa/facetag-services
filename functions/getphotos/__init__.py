@@ -4,6 +4,7 @@ import logging
 import azure.functions as func
 from __app__.commons.config import Config
 from __app__.commons.cosmosdb import PhotoDB
+from __app__.commons.blockblob import AzureStorageBlockBlob
 
 config=Config()
 
@@ -46,6 +47,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
   offset = int(offset) if offset and int(offset) >= 0  else 0
   limit = int(limit) if limit and int(limit) >= 0  else 100
 
+  storage_info = AzureStorageBlockBlob.parse_storage_conn_string(config.get_value('AzureWebJobsStorage'))
   photodb = PhotoDB(config)
   try:
     docs = photodb.get_photos( 
@@ -55,6 +57,17 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
           order_desc = order_desc,
           offset=offset,
           limit=limit)
+    ret_doc = []
+    for doc in list(docs):
+      token_dict = AzureStorageBlockBlob.generate_sas_token(
+                    storage_info['AccountName'],
+                    storage_info['AccountKey'],
+                    "rl", 
+                    1, 
+                    doc['asset_id'], 
+                    doc['blob_name'])
+      doc['blob_url']=token_dict['url']
+      ret_doc.append(doc)
     return func.HttpResponse(json.dumps(docs))
   except Exception as e:
     return func.HttpResponse(

@@ -326,6 +326,7 @@ Status: 200 OK
         "person_id": "a654f4c2-dc7d-43dc-a95a-8819da69587a"
       }
     ],
+    "blob_url": "https://facetagservice.blob.core.windows.net/ef57792e-ec97-4584-8090-7d2f3eb680cd/mai-shiraishi-0.jpg?sv=2018-03-28&ss=b&srt=o&sp=rl&se=2019-10-12T08%3A01%3A53Z&st=2019-10-12T06%3A56%3A53Z&spr=https&sig=%2FrxQ7P3UlasoXqk9mfIgr0uRBQQQPmmKhvKJN%2Bteisc%3D",
     "last_updated": 1569808309
   },
   {
@@ -338,6 +339,7 @@ Status: 200 OK
         "person_id": "a654f4c2-dc7d-43dc-a95a-8819da69587a"
       }
     ],
+    "blob_url": "https://facetagservice.blob.core.windows.net/ef57792e-ec97-4584-8090-7d2f3eb680cd/mai-shiraishi-1.jpg?sv=2018-03-28&ss=b&srt=o&sp=rl&se=2019-10-12T08%3A01%3A53Z&st=2019-10-12T06%3A56%3A53Z&spr=https&sig=%2FrxQ7P3UlasoXqk9mfIgr0uRBQQQPmmKhvKJN%2Bteisc%3D",
     "last_updated": 1569808315
   },
   {
@@ -346,6 +348,7 @@ Status: 200 OK
     "blob_name": "nobody-0.jpg",
     "user_id": "nogizaka46",
     "persons": [],
+    "blob_url": "https://facetagservice.blob.core.windows.net/ef57792e-ec97-4584-8090-7d2f3eb680cd/nobody-0.jpg?sv=2018-03-28&ss=b&srt=o&sp=rl&se=2019-10-12T08%3A01%3A53Z&st=2019-10-12T06%3A56%3A53Z&spr=https&sig=%2FrxQ7P3UlasoXqk9mfIgr0uRBQQQPmmKhvKJN%2Bteisc%3D",
     "last_updated": 1569808340
   }
   ...
