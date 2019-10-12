@@ -180,10 +180,22 @@ Status: 200 OK
 ```
 ```json
 [
-  "a654f4c2-dc7d-43dc-a95a-8819da69587a",   // ID for person1
-  "3dad91b4-fa4c-4c11-b9c0-e240a579c253",   // ID for person2
-  ...,
-  "b89387bf-5a0e-48a2-bf58-49b6f1f78982",   // ID for personN
+  {
+    "person_id": "a654f4c2-dc7d-43dc-a95a-8819da69587a",
+    "person_name": "Mai Shiraishi",
+    "asset_id_for_train": "4119ad84-2e9d-463e-8c66-1f049fa4afc1"
+  },
+  {
+    "person_id": "3dad91b4-fa4c-4c11-b9c0-e240a579c253",
+    "person_name": "Erika Ikuta",
+    "asset_id_for_train": "ef57792e-ec97-4584-8090-7d2f3eb680cd"
+  },  
+  {
+    "person_id": "25eba549-fa9e-493d-a754-af2eb1aff735",
+    "person_name": "Manatsu Akimoto",
+    "asset_id_for_train": "b89387bf-5a0e-48a2-bf58-49b6f1f78982"
+  }, 
+  ...
 ]
 ```
 

@@ -23,10 +23,11 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
   userdb = UserDB(config)
   try:
     user = userdb.get_user(user_id)
-    person_ids =[]
-    for p in user['persons']:
-      person_ids.append(p['person_id'])
-    return func.HttpResponse(json.dumps(person_ids))
+    #person_ids =[]
+    #for p in user['persons']:
+    #  person_ids.append(p['person_id'])
+    #return func.HttpResponse(json.dumps(person_ids))
+    return func.HttpResponse(json.dumps(user['persons']))
   except Exception as e:
     return func.HttpResponse(
         str(e),
