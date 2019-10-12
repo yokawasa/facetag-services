@@ -396,14 +396,15 @@ Get a SAS token for Azure Storage for the specified container and blob name. You
 
 |Name|Type| Requred |Description|
 |---|---|---|---|
-|`permission`| string | Yes | Signed permission for shared access signature | 
+|`permission`| string | Yes | Signed permission for shared access signature. See Note below for the detai) | 
 |`container` | string | Yes | Container name to access |
 |`blobname`  | string | | Blob object name to access |
 | `ttl`      | string | | Token time to live period in hours. 1hour by default |
 
-- The following values can be used for permissions: 
- `a` (Add), `r` (Read), `w` (Write), `d` (Delete), `l` (List)
-- Concatenate multiple permissions, such as `rwa` = Read, Write, Add
+> NOTE for **permission** param:
+> - The following values can be used for permissions: 
+>  `a` (Add), `r` (Read), `w` (Write), `d` (Delete), `l` (List)
+> - Concatenate multiple permissions, such as `rwa` = Read, Write, Add
 
 Sample Request Body
 ```json
