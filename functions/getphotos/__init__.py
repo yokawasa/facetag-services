@@ -12,7 +12,8 @@ req method: POST
 body:
 {
   "user_id": <user_id>,      // required
-  "person_id": <person_id>,  // required
+  "person_id": <person_id>,  // optional
+  "asset_id": <asset_id>,   // optional
   "order": <order: ASC|DESC> // optional (default: DESC)
   "offset": <offset num>     // optional (default: 0)
   "limit": <limit num>       // optional (default: 100)
@@ -30,22 +31,30 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
   user_id = req_body.get('user_id')
   person_id = req_body.get('person_id')
+  asset_id = req_body.get('asset_id')
   order = req_body.get('order')
   offset = req_body.get('offset')
   limit = req_body.get('limit')
-  if not user_id or not person_id:
+
+  if not user_id:
     return func.HttpResponse(
-        "Please pass both user_id and person_id on the query string or in the request body",
+        "Please pass user_id in the request body",
         status_code=400
     )
 
   order_desc = True if order.lower == 'desc' else False
-  offset = int(offset) if offset and int(offset) > 0  else 100
-  limit = int(limit) if limit and int(limit) >= 0  else 0
+  offset = int(offset) if offset and int(offset) >= 0  else 0
+  limit = int(limit) if limit and int(limit) >= 0  else 100
 
   photodb = PhotoDB(config)
   try:
-    docs = photodb.get_photos_of_person(user_id, person_id, order_desc = order_desc, offset=offset, limit=limit )
+    docs = photodb.get_photos( 
+          user_id=user_id,
+          person_id=person_id,
+          asset_id=asset_id,
+          order_desc = order_desc,
+          offset=offset,
+          limit=limit)
     return func.HttpResponse(json.dumps(docs))
   except Exception as e:
     return func.HttpResponse(

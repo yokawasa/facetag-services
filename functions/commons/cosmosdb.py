@@ -230,30 +230,37 @@ class PhotoDB(AzureCosmosDB):
     }
     return self.upsert_document(doc)
 
-  def get_photos_of_person(self, user_id, person_id, order_desc = True, offset=0, limit=100 ):
+
+  def get_photos(self, user_id, person_id=None, asset_id=None, order_desc = True, offset=0, limit=100 ):
     order_s = 'DESC' if order_desc else 'ASC'
-    # query = {"query": "SELECT * FROM c WHERE c.user_id=\"{0}\" and ARRAY_CONTAINS(c.persons, {{ \"person_id\" : \"{1}\" }}, true) ORDER BY c._ts {2} OFFSET {3} LIMIT {4}".format( user_id, person_id, order_s, offset, limit) }
-    query = {"query": "SELECT c.id as photo_id, c.asset_id, c.blob_name, c.user_id, c.persons, c._ts as last_updated FROM c WHERE c.user_id=\"{0}\" and ARRAY_CONTAINS(c.persons, {{ \"person_id\" : \"{1}\" }}, true) ORDER BY c._ts {2} OFFSET {3} LIMIT {4}".format( user_id, person_id, order_s, offset, limit) }
-    # print("query={}".format(query))
+    if not user_id:
+      raise Exception("Invalid query exception: at least user_id is needed")
+
+    query = ''
+    if not person_id and asset_id: 
+      query = {"query": "SELECT c.id as photo_id, c.asset_id, c.blob_name, c.user_id, c.persons, c._ts as last_updated FROM c WHERE c.user_id=\"{0}\" and c.asset_id=\"{1}\" ORDER BY c._ts {2} OFFSET {3} LIMIT {4}".format( user_id, asset_id, order_s, offset, limit) }
+    elif person_id and not asset_id: 
+      query = {"query": "SELECT c.id as photo_id, c.asset_id, c.blob_name, c.user_id, c.persons, c._ts as last_updated FROM c WHERE c.user_id=\"{0}\" and ARRAY_CONTAINS(c.persons, {{ \"person_id\" : \"{1}\" }}, true) ORDER BY c._ts {2} OFFSET {3} LIMIT {4}".format( user_id, person_id, order_s, offset, limit) }
+    else:
+      query = {"query": "SELECT c.id as photo_id, c.asset_id, c.blob_name, c.user_id, c.persons, c._ts as last_updated FROM c WHERE c.user_id=\"{0}\" ORDER BY c._ts {1} OFFSET {2} LIMIT {3}".format( user_id, order_s, offset, limit) }
+
     try:
       return self.get_documents(query)
     except Exception as e:
       logging.error("PhotoDB get photos of person error ( user_id {} person_id {} query {} ): {} ".format(user_id, person_id, query, str(e)))
     return None
 
-  def get_photos_in_asset(self, user_id, asset_id, order_desc = True, offset=0, limit=100 ):
-    order_s = 'DESC' if order_desc else 'ASC'
-    query = {"query": "SELECT c.id as photo_id, c.asset_id, c.blob_name, c.user_id, c.persons, c._ts as last_updated FROM c WHERE c.user_id=\"{0}\" and c.asset_id=\"{1}\" ORDER BY c._ts {2} OFFSET {3} LIMIT {4}".format( user_id, asset_id, order_s, offset, limit) }
-    # print("query={}".format(query))
-    try:
-      return self.get_documents(query)
-    except Exception as e:
-      logging.error("PhohtoDB get photos in asset error ( user_id {} asset_id {} query {} ): {} ".format(user_id, asset_id, query, str(e)))
-    return None
 
   def delete_photos_in_asset(self, user_id, asset_id):
     try :
-      docs = self.get_photos_in_asset(user_id, asset_id)
+      docs = self.get_photos( 
+          user_id=user_id,
+          person_id=None,
+          asset_id=asset_id,
+          order_desc = True,
+          offset=0,
+          limit=10000)
+
       for doc in list(docs):
         logging.info("PhotoDB deleting photo (user_id {} asset_id {} photo_id {} )".format(user_id, asset_id, doc['id']) )
         self.delete_document(doc['id'])

@@ -23,6 +23,7 @@ Face tagging services is a collection of APIs that allow you to build photo shar
         - [Get Assets](#get-assets)
         - [Get Photos](#get-photos)
         - [Trigger Train](#trigger-train)
+        - [Get Blob SAS Token](#get-blob-sas-token)
 
 <!-- /TOC -->
 
@@ -219,6 +220,7 @@ Status: 200 OK
 Delete an asset of a user
 
 > DELETE /api/deleteasset?user_id={user_id}&asset_id={asset_id}
+
 **Response**
 
 ```
@@ -269,16 +271,38 @@ Get the list of photos of a user. You can filter photos by a Person ID, Asset ID
 |Name|Type| Requred |Description|
 |---|---|---|---|
 | `user_id`| string | Yes | User ID |
-| `person_id`| string | Yes | Person ID |
+| `person_id`| string |  | Person ID |
+| `asset_id`| string |  | Asset ID |
 | `order`| string |  | ASC or DESC (default) |
 | `offset`| number |  | Offset position of result items(Default 0) |
 | `limit`| number |  | limit number of result items (Default 100) |
 
-Example request
+Example 1: Get photos of a person in a user group (user_id + person_id)
 ```json
 {
   "user_id": "nogizaka46",
   "person_id": "a654f4c2-dc7d-43dc-a95a-8819da69587a",
+  "order": "DESC",
+  "offset": "0",
+  "limit": "50"
+}
+```
+
+Example 2: Get photos stored in a asset (user_id + asset_id)
+```json
+{
+  "user_id": "nogizaka46",
+  "person_id": "a654f4c2-dc7d-43dc-a95a-8819da69587a",
+  "order": "DESC",
+  "offset": "0",
+  "limit": "50"
+}
+```
+
+Example 3: Get photos in a user group (user_id)
+```json
+{
+  "user_id": "nogizaka46",
   "order": "DESC",
   "offset": "0",
   "limit": "50"
@@ -345,4 +369,49 @@ Trigger training of a person's faces
 
 ```
 Status: 200 OK
+```
+
+### Get Blob SAS Token
+
+Get a SAS token for Azure Storage for the specified container and blob name. You can also specify access permissions for the container/blob name and optionally its token time-to-live period. The SAS token expires in an hour by default.
+
+> POST /blobsastoken
+
+**Request**
+
+|Name|Type| Requred |Description|
+|---|---|---|---|
+|`permission`| string | Yes | Signed permission for shared access signature | 
+|`container` | string | Yes | Container name to access |
+|`blobname`  | string | | Blob object name to access |
+| `ttl`      | string | | Token time to live period in hours. 1hour by default |
+
+- The following values can be used for permissions: 
+ `a` (Add), `r` (Read), `w` (Write), `d` (Delete), `l` (List)
+- Concatenate multiple permissions, such as `rwa` = Read, Write, Add
+
+Sample Request Body
+```json
+ {
+    'permission': "rl",
+    'container': "functions",
+    'blobname': "yokawasa.png"
+ }
+```
+**Response** 
+Response body format
+```json
+HTTP response body format is:
+{
+    'token': '<Shared Access Signature Token string>',
+    'url' :  '<SAS resource URI>'
+}
+```
+
+Sample Response Body
+```json
+{
+  "token": "sv=2018-03-28&ss=b&srt=o&sp=rl&se=2019-03-29T14%3A02%3A37Z&st=2019-03-29T11%3A57%3A37Z&spr=https&sig=Sh7RAa5MZBk7gfv0haCbEbllFXoiOWJDK9itzPeqURE%3D",
+  "url": "https://azfuncv2linuxstore.blob.core.windows.net/functiontest/sample.jpg?sv=2018-03-28&ss=b&srt=o&sp=rl&se=2019-03-29T14%3A02%3A37Z&st=2019-03-29T11%3A57%3A37Z&spr=https&sig=Sh7RAa5MZBk7gfv0haCbEbllFXoiOWJDK9itzPeqURE%3D" 
+}
 ```

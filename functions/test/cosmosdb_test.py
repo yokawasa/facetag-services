@@ -55,10 +55,20 @@ if __name__ == "__main__":
   user_id = 'yoichika4'
   person_id='a654f4c2-dc7d-43dc-a95a-8819da69587a'
   print("offset 1 limit 1")
-  docs = photodb.get_photos_of_person(user_id, person_id, order_desc = True, offset=1, limit=1 )
+  docs = photodb.get_photos(user_id=user_id,
+        person_id=person_id, 
+        asset_id=None, 
+        order_desc = True,
+        offset=1,
+        limit=1 )
   for doc in docs:
     print(doc)
   print("offset 2 limit 2")
-  docs = photodb.get_photos_of_person(user_id, person_id, order_desc = True, offset=2, limit=2 )
+  docs = photodb.get_photos(user_id=user_id,
+        person_id=person_id, 
+        asset_id=None, 
+        order_desc = True,
+        offset=2,
+        limit=2 )
   for doc in docs:
     print(doc)
