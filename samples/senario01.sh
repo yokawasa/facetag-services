@@ -16,11 +16,11 @@ source ${SCRIPTBASE}/env.sh
 
 echo "Regist user: myfamily"
 user_id="myfamily"
-#${SCRIPTBASE}/registuser ${user_id} "My Family"
+${SCRIPTBASE}/registuser ${user_id} "My Family"
 
 echo "Create person in the user"
 person_name="My Father"
-# ${SCRIPTBASE}/createperson ${user_id} ${person_name}
+${SCRIPTBASE}/createperson ${user_id} ${person_name}
 # output: {"person_id": "05d2fb91-9092-4563-9bba-de08e53634a5", "person_name": "My Father", "asset_id_for_train": "37dac79b-ba83-4f8a-a72c-5c4b1679bed7"}%
 
 echo "Upload photos of the person for training"
