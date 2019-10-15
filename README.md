@@ -1,6 +1,6 @@
 # facetag-services
 
-Face tagging services is a collection of APIs that allow you to build photo sharing services where you can find a person's photos easily. It is full serverless services built using Azure functions, CosmosDB, Azure Blob Storage for backend.
+Face tagging services is a collection of APIs that allow you to build photo sharing services where you can find your registered persons among uploaded photos easily. It is full serverless services built using Azure functions, CosmosDB, Azure Blob Storage for backend.
 
 **Table of Contents**
 <!-- TOC -->
